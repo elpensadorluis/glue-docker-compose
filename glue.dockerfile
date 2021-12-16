@@ -82,6 +82,7 @@ COPY src/config/spark/spark-env.sh $SPARK_HOME/conf/
 COPY src/config/spark/spark-defaults.conf $SPARK_HOME/conf/
 
 COPY src/config/config $HOME/.aws/config
+COPY src/config/credentials $HOME/.aws/credentials
 
 # Add py4j to python path
 ENV PYTHONPATH $GLUE_HOME:$SPARK_HOME/python/:$SPARK_HOME/python/lib/py4j-0.10.7-src.zip

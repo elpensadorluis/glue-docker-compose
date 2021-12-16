@@ -11,15 +11,29 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: foobar
       AWS_SECRET_ACCESS_KEY: foobarfoo
-  s3:
-    hostname: s3
-    image: minio/minio:RELEASE.2020-09-26T03-44-56Z
-    environment:
-      MINIO_ACCESS_KEY: foobar
-      MINIO_SECRET_KEY: foobarfoo
-    ports:
-      - "9000"
     volumes:
-      - ./minio/data:/data
-      - ./minio/config:/root/.minio
-    command: server /data
+      - ./src/data:/root/data
+
+  s3:
+    # image: RELEASE.2020-10-28T08-16-50Z-48-ge773e06e5
+    image: quay.io/minio/minio
+    container_name: "minio2"
+    ports:
+      - 9090:9000
+      - 9001:9001
+    environment:
+      - MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE
+      - MINIO_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+    entrypoint: sh
+    command: -c "
+      mkdir -p /data/.minio.sys/buckets;
+      cp -r /policies/* /data/.minio.sys/;
+      cp -r /export/* /data/;
+      /opt/bin/minio server /data;
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://172.17.0.2:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: always
