@@ -152,3 +152,5 @@ urllib3==1.25.8
     #   botocore
     #   pmdarima
     #   requests
+black==19.10b0
+awswrangler

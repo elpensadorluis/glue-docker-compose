@@ -28,7 +28,7 @@ glue /bin/bash
 
 ### Create test bucket
 ```
-aws s3 mb "s3://sample-bucket" --region ap-southeast-2 --endpoint-url=http://s3:9000
+aws s3 mb "s3://sample-bucket" --region us-est-1 --endpoint-url=http://s3:9000
 ```
 
 ### Upload some data
