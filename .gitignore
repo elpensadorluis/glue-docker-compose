@@ -1,8 +1,8 @@
 .idea
 minio
 venv
-casaideas
 metastore_db
 dynamodb
 .devcontainer
 README_tmp.html
+casaideas/tablero-sprint-5
