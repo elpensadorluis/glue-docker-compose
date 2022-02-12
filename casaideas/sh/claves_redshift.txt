@@ -1,0 +1,13 @@
+redshift-cluster.cbedthgistvh.us-east-1.redshift.amazonaws.com
+5439
+ci_db
+awsuser
+aE=leC8oOTSfe2-3_8
+
+# Claves de rutina de carga de redshift
+
+    DB_NAME: ci_db
+    USER_NAME: datapipeline_superuser
+    HOST_NAME: redshift-cluster.cbedthgistvh.us-east-1.redshift.amazonaws.com
+    PASSWORD: qOC1O0qNbKZ}[58>
+    Port: 5439

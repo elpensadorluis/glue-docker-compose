@@ -17,7 +17,9 @@
 --contribucion DOUBLE PRECISION,
 --unidades DOUBLE PRECISION,
 --precio_unitario DOUBLE PRECISION,
---fecha DATE
+--fecha DATE,
+--pais VARCHAR,
+--moneda VARCHAR
 --);
 
 TRUNCATE dev.fct_ventas_dev;
@@ -41,6 +43,8 @@ INSERT INTO
        ,contribucion
        ,unidades
        ,precio_unitario
+       ,pais
+       ,moneda
 	)
 SELECT 
     v.fkdat AS fecha				--Fecha de factura para el índice de factura e impresión
@@ -60,14 +64,16 @@ SELECT
     ,sum(v.kzwi3*100 - v.wavwr*100) as contribucion 
     ,sum(v.fkimg) as unidades 
     ,isNull(sum(v.kzwi3*100)/nullif((sum(v.fkimg)), 0), 0) as precio_unitario
+    ,c.pais_id as pais
+    ,v.hwaer as moneda
 FROM
     prod.fct_2lis_13_vditm_reclasificado v
-INNER JOIN prod.dim_centro 
-				ON centro_id_sap=v.werks_recla 
-				AND pais_id='CL'
+INNER JOIN prod.dim_centro c
+				ON c.centro_id_sap=v.werks_recla 
+				AND c.pais_id='CL'
 LEFT JOIN prod.dim_m_cluster d ON d.werks = v.werks_recla
 LEFT JOIN prod.dim_m_tvtwt n ON n.vtweg = v.vtweg_recla
-GROUP BY 1,2,3,4,5,6,7,8,9
+GROUP BY 1,2,3,4,5,6,7,8,9,18,19
        ;
 
 UPDATE dev.fct_ventas_dev SET centro_tipo='Tienda' where centro_id_sap like 'T%' and centro_id_sap<>'T001';

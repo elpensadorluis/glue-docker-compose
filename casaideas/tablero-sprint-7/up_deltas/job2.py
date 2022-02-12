@@ -271,7 +271,7 @@ print("Imprimiendo la respuesta de la funcion:")
 # print(objects)
 
 for object in objects:
-    if object.find("2019.csv") != -1:
+    if object.find("2020.csv") != -1:
         # print("object: " + object)
         year = object[49:53]
         month = object[54:56]
@@ -296,7 +296,7 @@ for object in objects:
         # df.printSchema()
 
         df.repartition(1).write.mode("overwrite").parquet(
-            "s3://dev-534086549449-data-raw-2/parquet/tables/2lis_13_vditm/year=2019/"
+            "s3://dev-534086549449-data-raw-2/parquet/tables/2lis_13_vditm/year=2020/"
         )
 
         job.commit()

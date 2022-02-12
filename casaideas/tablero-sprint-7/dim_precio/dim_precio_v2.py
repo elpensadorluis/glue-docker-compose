@@ -114,18 +114,38 @@ dict_cols = {
 #     "s3://dev-534086549449-data-lake/parquet/sap/tables/a004/year=2022/month=01/day=18/"
 # )
 
+
+try:
+    event = getResolvedOptions(
+        sys.argv,
+        ["ENV", "YEAR", "MONTH", "DAY",],  # "dev", "prod"  # "2021"  # "12"  # "06"
+    )
+except:
+    event = {
+        "ENV": "dev",
+        "YEAR": "-",
+        "MONTH": "-",
+        "DAY": "-",
+    }
+
+env = "prod" if event["ENV"] == "prod" else "dev"
+year = event["YEAR"] if event["YEAR"] != "-" else datetime.today().strftime("%Y")
+month = event["MONTH"] if event["MONTH"] != "-" else datetime.today().strftime("%m")
+day = event["DAY"] if event["DAY"] != "-" else datetime.today().strftime("%d")
+
+
 df_p = (
     spark.read.format("parquet")
     .options(header="true")
     .load(
-        "s3://dev-534086549449-data-lake/parquet/sap/tables/knop/year=2022/month=01/day=18/"
+        f"s3://{env}-534086549449-data-lake/parquet/sap/tables/knop/year={year}/month={month}/day={day}/"
     )
 )
 df_c = (
     spark.read.format("parquet")
     .options(header="true")
     .load(
-        "s3://dev-534086549449-data-lake/parquet/sap/tables/a004/year=2022/month=01/day=18/"
+        f"s3://{env}-534086549449-data-lake/parquet/sap/tables/a004/year={year}/month={month}/day={day}/"
     )
 )
 print("Creando tablas ")
@@ -234,22 +254,37 @@ df_b = spark.sql(query)
 df_b.printSchema()
 # df_b.show()
 
-# Probando suerte
-from pyspark.sql.functions import to_timestamp
+# # Probando suerte
 
-print("convirtiendo date spark a pandas")
+# from pyspark.sql.functions import to_timestamp
+
+# print("convirtiendo date spark a pandas")
 # inicio_validez_reg_condicion: date (nullable = true)
 # fin_validez_reg_condicion: date (nullable = true)
+# df_precios = df_b.withColumn(
+#     "inicio_validez_reg_condicion",
+#     to_timestamp(df_b.inicio_validez_reg_condicion, "yyyy-MM-dd"),
+# )
+# df_precios = df_precios.withColumn(
+#     "fin_validez_reg_condicion",
+#     to_timestamp(df_b.fin_validez_reg_condicion, "yyyy-MM-dd"),
+# )
+
+print("convirtiendo date spark a string")
+
+from pyspark.sql.types import StringType
+
 df_precios = df_b.withColumn(
     "inicio_validez_reg_condicion",
-    to_timestamp(df_b.inicio_validez_reg_condicion, "yyyy-MM-dd"),
+    df_b["inicio_validez_reg_condicion"].cast(StringType()),
 )
 df_precios = df_precios.withColumn(
     "fin_validez_reg_condicion",
-    to_timestamp(df_b.fin_validez_reg_condicion, "yyyy-MM-dd"),
+    df_precios["fin_validez_reg_condicion"].cast(StringType()),
 )
 
-# df_precios.printSchema()
+
+df_precios.printSchema()
 # df_precios.show()
 
 print("convirtiendo a pandas")
@@ -321,8 +356,8 @@ DATA_TYPES = {
     "num_material": "string",
     "moneda": "string",
     "num_reg_condicion": "string",
-    "inicio_validez_reg_condicion": "timestamp",
-    "fin_validez_reg_condicion": "timestamp",
+    "inicio_validez_reg_condicion": "string",
+    "fin_validez_reg_condicion": "string",
     "aplicacion": "string",
     "regular": "double",
     "ajuste": "double",
@@ -351,7 +386,10 @@ def check_Table(con, schema, table):
     if s == "False":
         return False
     else:
-        return True
+        stmt = "DROP TABLE IF EXISTS %s.%s;" % (schema, table)
+        with con.cursor() as cursor:
+            cursor.execute(stmt)
+        return False
 
 
 con = wr.redshift.connect("redshift")
@@ -375,17 +413,18 @@ if check_Table(con, SCHEMA, TABLE) is False:
 
 else:
     print("Actualizando tabla {} en db {}.".format(TABLE, SCHEMA))
-
-    wr.redshift.copy(
-        df=dim_precios,
-        path=PATH_TMP,
-        con=con,
-        schema=SCHEMA,
-        table=TABLE,
-        dtype=data_types,
-        mode="upsert",
-        primary_keys=[PRIMARY_KEY],
-    )
+    print("Algun Error en la actualizacion")
+    # wr.redshift.copy(
+    #     df=dim_precios,
+    #     path=PATH_TMP,
+    #     con=con,
+    #     schema=SCHEMA,
+    #     table=TABLE,
+    #     dtype=data_types,
+    #     mode="overwrite",
+    #     overwrite_method="truncate",
+    #     primary_keys=[PRIMARY_KEY],
+    # )
 
 con.close()
 
