@@ -1,0 +1,38 @@
+{
+    "StartAt": "mapSuperDias",
+    "States": {
+        "mapSuperDias": {
+            "Type": "Map",
+            "End": true,
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.ALL"
+                    ],
+                    "MaxAttempts": 1
+                }
+            ],
+            "Iterator": {
+                "StartAt": "Glue StartJobRun",
+                "States": {
+                    "Glue StartJobRun": {
+                        "End": true,
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                        "Parameters": {
+                            "JobName": "casaideas-datalake-etl_dim_mix_comercial-qa",
+                            "Arguments": {
+                                "--ENV.$": "$.ENV",
+                                "--YEAR.$": "$.YEAR",
+                                "--MONTH.$": "$.MONTH",
+                                "--DAY.$": "$.DAY"
+                            }
+                        }
+                    }
+                }
+            },
+            "ItemsPath": "$.file",
+            "MaxConcurrency": 0
+        }
+    }
+}

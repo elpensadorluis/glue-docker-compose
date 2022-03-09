@@ -117,9 +117,29 @@ df_t = df_t.withColumn(
     "fecha_pago_saldo", f.to_date(df_t.fecha_pago_saldo, "dd.MM.yyyy")
 )
 df_t = df_t.withColumn("fecha_doc", f.to_date(df_t.fecha_doc, "dd.MM.yyyy"))
-df_t = df_t.withColumn(
-    "fecha_ingreso_cd", f.to_date(df_t.fecha_ingreso_cd, "dd.MM.yyyy")
-)
+# fecha_ret_a, fecha_des_cd
+# TODO: CAMBIAR FORMATO DE FECHA
+if not "fecha_ingreso_cd" in df_t.columns:
+    df_t = df_t.withColumn("fecha_ingreso_cd", f.lit(""))
+    df_t = df_t.withColumn(
+        "fecha_ingreso_cd", f.to_date(df_t.fecha_ingreso_cd, "dd.MM.yyyy")
+    )
+else:
+    df_t = df_t.withColumn(
+        "fecha_ingreso_cd", f.to_date(df_t.fecha_ingreso_cd, "dd.MM.yyyy")
+    )
+
+if not "fecha_ret_a" in df_t.columns:
+    df_t = df_t.withColumn("fecha_ret_a", f.lit(""))
+    df_t = df_t.withColumn("fecha_ret_a", f.to_date(df_t.fecha_ret_a, "dd.MM.yyyy"))
+else:
+    df_t = df_t.withColumn("fecha_ret_a", f.to_date(df_t.fecha_ret_a, "dd.MM.yyyy"))
+
+if not "fecha_des_cd" in df_t.columns:
+    df_t = df_t.withColumn("fecha_des_cd", f.lit(""))
+    df_t = df_t.withColumn("fecha_des_cd", f.to_date(df_t.fecha_des_cd, "dd.MM.yyyy"))
+else:
+    df_t = df_t.withColumn("fecha_des_cd", f.to_date(df_t.fecha_des_cd, "dd.MM.yyyy"))
 ### CAMBIOS DE FORMATO DE DATOS DE NUMEROS ###
 df_t = df_t.withColumn("fecha_db", lit(date)).withColumn("id_tiempo", lit(id_date))
 

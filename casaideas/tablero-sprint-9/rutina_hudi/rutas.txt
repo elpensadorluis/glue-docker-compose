@@ -1,0 +1,51 @@
+
+s3://bucket-raw
+ └ estore
+   └ ventas
+     └ full y deltas (csv)
+
+s3://bucket-raw2
+ └ estore
+    └ ventas
+      ├ historico
+      |   └ LOAD0000X.parquet
+      └ 2022
+         └ 02
+            └ 21
+               └ sdlkjbnaskjhbaoshfd.parquet
+
+s3://bucket-raw2
+ └ hudi
+    └ estore
+       ├ ventas
+       |  └ 2022
+       |    └ 02
+       |      └ 21
+       |        └ sdjahsdkjhasd.parquet
+       └ ventas_det
+          └ sadjkhasdlhjasd.parquet
+
+
+s3://bucket-staging
+ └ estore
+    ├ ventas
+    |  └ 2022
+    |     └ 02
+    |       └ 21
+    |         └ lñksdfj.parquet
+    └ ventas_det
+      └ 2022
+        └ 02
+          └ 21
+            └ ñksdfj.parquet
+
+
+s3://bucket-analytics
+ ├ estore
+ | └ fact_ventas
+ |   └ 2022
+ |     └ 02
+ |       └ 21
+ |         └ lñksdfj.parquet
+ └ sap
+   └ fact_ventas

@@ -108,9 +108,9 @@ def todo():
             print(db_connection)
             s3 = boto3.resource("s3", region_name=REGION_NAME)
             i = 0
-            for script in s3.Bucket(
-                "aws-redshift-scripts-534086549449-us-east-1"
-            ).objects.filter(Prefix=env):
+            for script in s3.Bucket("prod-534086549449-redshift").objects.filter(
+                Prefix=env
+            ):
                 key = script.key
                 print(key)
                 if i == 0:
@@ -119,42 +119,15 @@ def todo():
                 try:
                     name = key.split("/")
                     name = name[1]
-                    s3.Bucket(
-                        "aws-redshift-scripts-534086549449-us-east-1"
-                    ).download_file(key, os.path.join(BASE_DIR, name))
+                    s3.Bucket("prod-534086549449-redshift").download_file(
+                        key, os.path.join(BASE_DIR, name)
+                    )
                     i = i + 1
                     print("ejecutando: ", name)
-                    # db_connection.exec_sql_file(os.path.join(BASE_DIR,name))
+                    db_connection.exec_sql_file(os.path.join(BASE_DIR, name))
                 except Exception:
                     print("error {0} en script: ".format(Exception), name)
                     pass
-            # db_connection.exec_sql_file('01_0material_attr.sql')
-            # db_connection.exec_sql_file('02_0material_text.sql')
-            # db_connection.exec_sql_file('03_0plant_attr.sql')
-            # db_connection.exec_sql_file('04_tvtwt.sql')
-            # db_connection.exec_sql_file('05_t179t.sql')
-            # db_connection.exec_sql_file('06_zv_grupoex.sql')
-            # db_connection.exec_sql_file('07_zv_etario.sql')
-            # db_connection.exec_sql_file('08_ficha_corta.sql')
-            # db_connection.exec_sql_file('09_cluster.sql')
-            # db_connection.exec_sql_file('10_t_material_dim.sql')
-            # db_connection.exec_sql_file('11_s833.sql')
-
-            # #************** sales ***********************
-            # db_connection.exec_sql_file('12_2lis_13_vditm.sql')
-            # db_connection.exec_sql_file('13_mv_ficha_ventas.sql')
-            # db_connection.exec_sql_file('14_mv_ficha_corta_ventas.sql')
-
-            # # *********** Stock ***************************************************************
-            # db_connection.exec_sql_file('15_load_update_dev_mov_materiales.sql')
-            # db_connection.exec_sql_file('16_dev_load_0mat_sales_attr.sql')
-
-            # # *********** Tracking ***************************************************************
-            # db_connection.exec_sql_file('17_dev_load_fct_tracking.sql')
-
-            # # *********** Precios***************************************************************
-            # db_connection.exec_sql_file('18_dev_load_knop_precio_material.sql')
-            # db_connection.exec_sql_file('19_dev_load_a004_condicion_material.sql')
 
             db_connection.close_cursor()
             db_connection.connection.close()

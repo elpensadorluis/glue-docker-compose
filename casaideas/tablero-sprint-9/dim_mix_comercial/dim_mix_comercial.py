@@ -71,9 +71,9 @@ except:
     }
 
 env = "prod" if event["ENV"] == "prod" else "dev"
-year = event["YEAR"] if event["YEAR"] != "-" else datetime.today().strftime("%Y")
-month = event["MONTH"] if event["MONTH"] != "-" else datetime.today().strftime("%m")
-day = event["DAY"] if event["DAY"] != "-" else datetime.today().strftime("%d")
+year = datetime.today().strftime("%Y")
+month = datetime.today().strftime("%m")
+day = datetime.today().strftime("%d")
 
 date = year + "-" + month + "-" + day
 id_date = year + month + day
@@ -86,7 +86,7 @@ r_stage = "data-lake"
 w_stage = "analytics"
 r_formato = "parquet"
 w_formato = "parquet"
-r_source = "marc"
+r_source = "marc_transito"
 table = "dim_mix_comercial"
 path_tmp = "s3://aws-glue-scripts-534086549449/prueba_s3_to_redshift/tmp00/"
 output_s3_path = f"s3://{env}-{account_id}-{w_stage}/{w_formato}/tables/{table}/"

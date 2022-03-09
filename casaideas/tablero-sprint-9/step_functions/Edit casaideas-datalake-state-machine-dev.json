@@ -1,0 +1,510 @@
+{
+    "StartAt": "Parallel",
+    "States": {
+        "Parallel": {
+            "Type": "Parallel",
+            "Branches": [
+                {
+                    "StartAt": "Parallel_fct_ventas",
+                    "States": {
+                        "Parallel_fct_ventas": {
+                            "Type": "Parallel",
+                            "Branches": [
+                                {
+                                    "StartAt": "etl_generico_2lis_13_vditm",
+                                    "States": {
+                                        "etl_generico_2lis_13_vditm": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_generico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw",
+                                                    "--PREFIX": "csv/tables/2lis_13_vditm",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "2lis_13_vditm",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "Next": "etl_magico_2lis_13_vditm",
+                                            "Retry": [
+                                                {
+                                                    "ErrorEquals": [
+                                                        "States.ALL"
+                                                    ],
+                                                    "BackoffRate": 2,
+                                                    "IntervalSeconds": 3,
+                                                    "MaxAttempts": 2
+                                                }
+                                            ]
+                                        },
+                                        "etl_magico_2lis_13_vditm": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_magico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw-2",
+                                                    "--PREFIX": "parquet/sap/tables/2lis_13_vditm",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "2lis_13_vditm",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--EL_STRING": "[]",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "Retry": [
+                                                {
+                                                    "ErrorEquals": [
+                                                        "States.ALL"
+                                                    ],
+                                                    "BackoffRate": 1,
+                                                    "IntervalSeconds": 3,
+                                                    "MaxAttempts": 2
+                                                }
+                                            ],
+                                            "Next": "etl_2lis_13_vdltm_delta"
+                                        },
+                                        "etl_2lis_13_vdltm_delta": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "sap_generico"
+                                            },
+                                            "Next": "etl_2lis_13_vdltm_recla"
+                                        },
+                                        "etl_2lis_13_vdltm_recla": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "sap_generico"
+                                            },
+                                            "End": true
+                                        }
+                                    }
+                                },
+                                {
+                                    "StartAt": "etl_generico_tvtwt",
+                                    "States": {
+                                        "etl_generico_tvtwt": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_generico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw",
+                                                    "--PREFIX": "csv/tables/tvtwt",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "tvtwt",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "Next": "etl_magico_tvtwt",
+                                            "Retry": [
+                                                {
+                                                    "ErrorEquals": [
+                                                        "States.ALL"
+                                                    ],
+                                                    "BackoffRate": 1,
+                                                    "IntervalSeconds": 3,
+                                                    "MaxAttempts": 2
+                                                }
+                                            ]
+                                        },
+                                        "etl_magico_tvtwt": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_magico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw-2",
+                                                    "--PREFIX": "parquet/sap/tables/tvtwt",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "tvtwt",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--EL_STRING": "[]",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "Retry": [
+                                                {
+                                                    "ErrorEquals": [
+                                                        "States.ALL"
+                                                    ],
+                                                    "BackoffRate": 1,
+                                                    "IntervalSeconds": 3,
+                                                    "MaxAttempts": 2
+                                                }
+                                            ],
+                                            "Next": "etl_dim_tvtwt"
+                                        },
+                                        "etl_dim_tvtwt": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "sap_generico"
+                                            },
+                                            "End": true
+                                        }
+                                    }
+                                }
+                            ],
+                            "Next": "etl_fct_ventas_dev"
+                        },
+                        "etl_fct_ventas_dev": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                            "Parameters": {
+                                "JobName": "sap_generico"
+                            },
+                            "End": true
+                        }
+                    }
+                },
+                {
+                    "StartAt": "Parallel_dim_precio",
+                    "States": {
+                        "Parallel_dim_precio": {
+                            "Type": "Parallel",
+                            "Branches": [
+                                {
+                                    "StartAt": "etl_generico_a004",
+                                    "States": {
+                                        "etl_generico_a004": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_generico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw",
+                                                    "--PREFIX": "csv/tables/a004",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "a004",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "Next": "etl_magico_a004",
+                                            "Retry": [
+                                                {
+                                                    "ErrorEquals": [
+                                                        "States.ALL"
+                                                    ],
+                                                    "BackoffRate": 1,
+                                                    "IntervalSeconds": 3,
+                                                    "MaxAttempts": 2
+                                                }
+                                            ]
+                                        },
+                                        "etl_magico_a004": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_magico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw-2",
+                                                    "--PREFIX": "parquet/sap/tables/a004",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "a004",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--EL_STRING": "[]",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "End": true,
+                                            "Retry": [
+                                                {
+                                                    "ErrorEquals": [
+                                                        "States.ALL"
+                                                    ],
+                                                    "BackoffRate": 1,
+                                                    "IntervalSeconds": 3,
+                                                    "MaxAttempts": 2
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "StartAt": "etl_generico_knop",
+                                    "States": {
+                                        "etl_generico_knop": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_generico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw",
+                                                    "--PREFIX": "csv/tables/knop",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "knop",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "Next": "etl_magico_knop",
+                                            "Retry": [
+                                                {
+                                                    "ErrorEquals": [
+                                                        "States.ALL"
+                                                    ],
+                                                    "BackoffRate": 1,
+                                                    "IntervalSeconds": 3,
+                                                    "MaxAttempts": 2
+                                                }
+                                            ]
+                                        },
+                                        "etl_magico_knop": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_magico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw-2",
+                                                    "--PREFIX": "parquet/sap/tables/knop",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "knop",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--EL_STRING": "[]",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "End": true,
+                                            "Retry": [
+                                                {
+                                                    "ErrorEquals": [
+                                                        "States.ALL"
+                                                    ],
+                                                    "BackoffRate": 1,
+                                                    "IntervalSeconds": 3,
+                                                    "MaxAttempts": 2
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ],
+                            "Next": "etl_dim_precios"
+                        },
+                        "etl_dim_precios": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                            "Parameters": {
+                                "JobName": "casaideas-datalake-etl_dim_precio-qa",
+                                "Arguments": {
+                                    "--ENV": "dev",
+                                    "--YEAR": "-",
+                                    "--MONTH": "-",
+                                    "--DAY": "-"
+                                }
+                            },
+                            "End": true
+                        }
+                    }
+                },
+                {
+                    "StartAt": "etl_generico_tracking",
+                    "States": {
+                        "etl_generico_tracking": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                            "Parameters": {
+                                "JobName": "casaideas-datalake-etl_generico-qa",
+                                "Arguments": {
+                                    "--ENV": "dev",
+                                    "--STAGE": "raw",
+                                    "--PREFIX": "csv/tables/tracking",
+                                    "--ORIGIN": "sap",
+                                    "--TABLE": "tracking",
+                                    "--ENVIROMMENT": "qa",
+                                    "--YEAR": "-",
+                                    "--MONTH": "-",
+                                    "--DAY": "-"
+                                }
+                            },
+                            "Next": "etl_magico_traking"
+                        },
+                        "etl_magico_traking": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                            "Parameters": {
+                                "JobName": "casaideas-datalake-etl_magico-qa",
+                                "Arguments": {
+                                    "--ENV": "dev",
+                                    "--STAGE": "raw-2",
+                                    "--PREFIX": "parquet/sap/tables/tracking",
+                                    "--ORIGIN": "sap",
+                                    "--TABLE": "tracking",
+                                    "--ENVIROMMENT": "qa",
+                                    "--EL_STRING": "[]",
+                                    "--YEAR": "-",
+                                    "--MONTH": "-",
+                                    "--DAY": "-"
+                                }
+                            },
+                            "Next": "etl_fct_traking"
+                        },
+                        "etl_fct_traking": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                            "Parameters": {
+                                "JobName": "sap_generico"
+                            },
+                            "End": true
+                        }
+                    }
+                },
+                {
+                    "StartAt": "Parallel_fct_stock",
+                    "States": {
+                        "Parallel_fct_stock": {
+                            "Type": "Parallel",
+                            "Branches": [
+                                {
+                                    "StartAt": "etl_generico_mard",
+                                    "States": {
+                                        "etl_generico_mard": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_generico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw",
+                                                    "--PREFIX": "csv/tables/mard",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "mard",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "Next": "etl_magico_mard"
+                                        },
+                                        "etl_magico_mard": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_magico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw-2",
+                                                    "--PREFIX": "parquet/sap/tables/mard",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "mard",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--EL_STRING": "[]",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "End": true
+                                        }
+                                    }
+                                },
+                                {
+                                    "StartAt": "etl_generico_mardc",
+                                    "States": {
+                                        "etl_generico_mardc": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_generico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw",
+                                                    "--PREFIX": "csv/tables/marc",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "marc",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "Next": "etl_magico_marc"
+                                        },
+                                        "etl_magico_marc": {
+                                            "Type": "Task",
+                                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                                            "Parameters": {
+                                                "JobName": "casaideas-datalake-etl_magico-qa",
+                                                "Arguments": {
+                                                    "--ENV": "dev",
+                                                    "--STAGE": "raw-2",
+                                                    "--PREFIX": "parquet/sap/tables/marc",
+                                                    "--ORIGIN": "sap",
+                                                    "--TABLE": "marc",
+                                                    "--ENVIROMMENT": "qa",
+                                                    "--EL_STRING": "[]",
+                                                    "--YEAR": "-",
+                                                    "--MONTH": "-",
+                                                    "--DAY": "-"
+                                                }
+                                            },
+                                            "End": true
+                                        }
+                                    }
+                                }
+                            ],
+                            "Next": "etl_fct_stock"
+                        },
+                        "etl_fct_stock": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                            "Parameters": {
+                                "JobName": "sap_generico"
+                            },
+                            "End": true
+                        }
+                    }
+                }
+            ],
+            "Next": "etl_fct_precios_ventas"
+        },
+        "etl_fct_precios_ventas": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+            "Parameters": {
+                "JobName": "sap_generico"
+            },
+            "Next": "etl_to_redshift_pipeline"
+        },
+        "etl_to_redshift_pipeline": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::glue:startJobRun.sync",
+            "Parameters": {
+                "JobName": "sap_generico"
+            },
+            "End": true
+        }
+    }
+}

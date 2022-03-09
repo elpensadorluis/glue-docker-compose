@@ -94,7 +94,7 @@ df_c = (
     spark.read.format("parquet")
     .options(header="true")
     .load(
-        f"s3://{env}-534086549449-data-lake/parquet/sap/tables/marc/year={year}/month={month}/day={day}/"
+        f"s3://{env}-534086549449-data-lake/parquet/sap/tables/marc_transito/year={year}/month={month}/day={day}/"
     )
 )
 
@@ -185,12 +185,7 @@ query = f"""
 df_a = spark.sql(query)
 df_a.printSchema()
 df_a.show(10)
-# df_full = (
-#     spark.read.format("parquet")
-#     .options(header="true")
-#     .load("s3://dev-534086549449-analytics/parquet/tables/fct_stock/")
-# )
-# df_final = df_a.unionByName(df_full)
+
 print("Grabando a disco")
 
 df_a.repartition(1).write.mode("append").parquet(
@@ -198,81 +193,5 @@ df_a.repartition(1).write.mode("append").parquet(
 )
 
 print("Grabado a disco")
-
-### Inicio de escritura de dataframe a redshift ###
-# dim_precios = df_final.toPandas()
-
-# DATA_TYPES = {
-#     "id_stock": "string",
-#     "fecha_db": "date",
-#     "id_tiempo": "string",
-#     "centro_id_sap": "string",
-#     "almacen": "string",
-#     "num_material": "string",
-#     "stock": "double",
-#     "stock_transito": "double",
-#     "stock_bloqueado": "double",
-# }
-
-# TABLE = "fct_stock"
-# SCHEMA = "dev"
-# PATH_TMP = "s3://aws-glue-scripts-534086549449/prueba_s3_to_redshift/tmp00/"
-# PRIMARY_KEY = "id_stock"
-
-
-# def check_Table(con, schema, table):
-#     stmt = (
-#         "SELECT EXISTS (SELECT 1 FROM   information_schema.tables WHERE  table_schema = '%s' AND table_name = '%s');"
-#         % (schema, table)
-#     )
-#     with con.cursor() as cursor:
-#         cursor.execute(stmt)
-#         s = cursor.fetchone()
-#         s = " ".join(map(str, s))
-#     if s == "False":
-#         return False
-#     else:
-#         stmt = "DROP TABLE IF EXISTS %s.%s;" % (schema, table)
-#         with con.cursor() as cursor:
-#             cursor.execute(stmt)
-#         return False
-
-
-# con = wr.redshift.connect("redshift")
-# data_types = DATA_TYPES
-
-# print(dim_precios.info())
-
-# if check_Table(con, SCHEMA, TABLE) is False:
-#     print("Creando tabla {} en db {}.".format(TABLE, SCHEMA))
-
-#     wr.redshift.copy(
-#         df=dim_precios,
-#         path=PATH_TMP,
-#         con=con,
-#         schema=SCHEMA,
-#         table=TABLE,
-#         dtype=data_types,
-#         mode="overwrite",
-#         primary_keys=[PRIMARY_KEY],
-#     )
-
-# else:
-#     print("Actualizando tabla {} en db {}.".format(TABLE, SCHEMA))
-#     print("Algun Error en la actualizacion")
-#     # wr.redshift.copy(
-#     #     df=dim_precios,
-#     #     path=PATH_TMP,
-#     #     con=con,
-#     #     schema=SCHEMA,
-#     #     table=TABLE,
-#     #     dtype=data_types,
-#     #     mode="overwrite",
-#     #     overwrite_method="truncate",
-#     #     primary_keys=[PRIMARY_KEY],
-#     # )
-
-# con.close()
-
 
 print("Ha terminado satisfactoriamente")
